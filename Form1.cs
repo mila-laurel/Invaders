@@ -19,6 +19,15 @@ namespace Invaders
         public Form1()
         {
             InitializeComponent();
+            game = new Game();
+            game.GameOver += Game_GameOver;
+        }
+
+        private void Game_GameOver(object sender, EventArgs e)
+        {
+            gameplayTimer.Stop();
+            gameOver = true;
+            Invalidate();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -43,7 +52,7 @@ namespace Invaders
                 keysPressed.Remove(e.KeyCode);
         }
 
-        int cell = 0;
+        int animationCell = 0;
         int frame = 0;
         private void animationTimer_Tick(object sender, EventArgs e)
         {
@@ -53,28 +62,60 @@ namespace Invaders
             switch (frame)
             {
                 case 0:
-                    cell = 0;
+                    animationCell = 0;
                     break;
                 case 1:
-                    cell = 1;
+                    animationCell = 1;
                     break;
                 case 2:
-                    cell = 2;
+                    animationCell = 2;
                     break;
                 case 3:
-                    cell = 3;
+                    animationCell = 3;
                     break;
                 case 4:
-                    cell = 2;
+                    animationCell = 2;
                     break;
                 case 5:
-                    cell = 1;
+                    animationCell = 1;
                     break;
                 default:
-                    cell = 0;
+                    animationCell = 0;
                     break;
             }
 
+        }
+
+        private void gameplayTimer_Tick(object sender, EventArgs e)
+        {
+            game.Go();
+            foreach (Keys key in keysPressed)
+            {
+                if (key == Keys.Left)
+                {
+                    game.MovePlayer(Direction.Left);
+                    return;
+                }
+                else if (key == Keys.Right)
+                {
+                    game.MovePlayer(Direction.Right);
+                    return;
+                }
+            }
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            if (gameOver)
+            {
+                using (Font font = new Font("Arial", 32, FontStyle.Bold))
+                {
+                    g.DrawString("GAME OVER", font, Brushes.Yellow, 210, 230);
+                    g.DrawString("Press S to start a new game or Q to quit", font, Brushes.White, 630, 420);
+                }
+            }
+            game.Draw(g, animationCell);         
         }
     }
 }

@@ -41,6 +41,7 @@
             // gameplayTimer
             // 
             this.gameplayTimer.Interval = 10;
+            this.gameplayTimer.Tick += new System.EventHandler(this.gameplayTimer_Tick);
             // 
             // Form1
             // 
@@ -53,6 +54,7 @@
             this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "Invaders";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.ResumeLayout(false);
