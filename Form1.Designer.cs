@@ -28,20 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            this.animationTimer = new System.Windows.Forms.Timer(this.components);
+            this.gameplayTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
+            // 
+            // animationTimer
+            // 
+            this.animationTimer.Interval = 33;
+            this.animationTimer.Tick += new System.EventHandler(this.animationTimer_Tick);
+            // 
+            // gameplayTimer
+            // 
+            this.gameplayTimer.Interval = 10;
+            this.gameplayTimer.Tick += new System.EventHandler(this.gameplayTimer_Tick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(827, 450);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Invaders";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer animationTimer;
+        private System.Windows.Forms.Timer gameplayTimer;
     }
 }
 
