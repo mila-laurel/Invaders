@@ -13,5 +13,10 @@ namespace Invaders
         {
             throw new NotImplementedException();
         }
+
+        internal void Twinkle()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

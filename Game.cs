@@ -44,8 +44,9 @@ namespace Invaders
                 gameOver(this, new EventArgs());
         }
 
-        internal void Draw(Graphics g, int animationCell)
+        public void Draw(Graphics g, int animationCell)
         {
+            g.FillRectangle(Brushes.Black, boundaries);
             stars.Draw(g);
             foreach(Invader invader in invaders)
                invader.Draw(g, animationCell);
@@ -54,6 +55,19 @@ namespace Invaders
                 shot.Draw(g);
             foreach (Shot shot in invaderShots)
                 shot.Draw(g);
+            if (livesLeft < 0)
+            {
+                using (Font font = new Font("Arial", 32, FontStyle.Bold))
+                {
+                    g.DrawString("GAME OVER", font, Brushes.Yellow, 210, 230);
+                    g.DrawString("Press S to start a new game or Q to quit", font, Brushes.White, 630, 420);
+                }
+            }
+        }
+
+        public void Twinkle()
+        {
+            stars.Twinkle();
         }
     }
 }
