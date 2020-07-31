@@ -15,11 +15,12 @@ namespace Invaders
         List<Keys> keysPressed = new List<Keys>();
         bool gameOver = false;
         private Game game;
+        Random random = new Random();
 
         public Form1()
         {
             InitializeComponent();
-            game = new Game();
+            game = new Game(random, ClientRectangle);
             game.GameOver += Game_GameOver;
         }
 
@@ -40,7 +41,7 @@ namespace Invaders
                     return;
                 }
             if (e.KeyCode == Keys.Space)
-                game.FireShot();
+                game.FireShot(game.PlayerShipLocation);
             if (keysPressed.Contains(e.KeyCode))
                 keysPressed.Remove(e.KeyCode);
             keysPressed.Add(e.KeyCode);

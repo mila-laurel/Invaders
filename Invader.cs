@@ -9,7 +9,13 @@ namespace Invaders
 {
     class Invader
     {
+        public Rectangle Area { get; set; }
         internal void Draw(Graphics g, int animationCell)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Move(Direction direction)
         {
             throw new NotImplementedException();
         }
