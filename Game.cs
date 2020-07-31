@@ -53,33 +53,10 @@ namespace Invaders
                     if (!shot.Move(Direction.Down, boundaries))
                         invaderShots.Remove(shot);
                 }
-                if (framesSkipped == 7 - wave)
-                {
-                    foreach (Invader invader in invaders)
-                    {
-                        if (new Rectangle(0, 0, 1, boundaries.Height).Contains(invader.Area) || new Rectangle(boundaries.Right - 1, 0, 1, boundaries.Height).Contains(invader.Area))
-                        {
-                            invader.Move(Direction.Down);
-                            if (invaderDirection == Direction.Right)
-                                invaderDirection = Direction.Left;
-                            else
-                                invaderDirection = Direction.Right;
-                        }
-                        invader.Move(invaderDirection);
-                        if (invaderShots.Count < 2)
-                        {
-                            Invader shootingInvader = invaders[random.Next(invaders.Count)];
-                            invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y)));
-                            if (invaderShots.Count < 2)
-                            {
-                                shootingInvader = invaders[random.Next(invaders.Count)];
-                                invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y)));
-                            }
-                        }
-                    }
-                    framesSkipped = -1;
-                }
-                framesSkipped++;
+                MoveInvaders();
+                ReturnFire();
+                CheckForPlayerCollisions();
+                CheckForInvaderCollisions();
             }
             else
             {
@@ -100,25 +77,92 @@ namespace Invaders
         {
             if (framesSkipped == 7 - wave)
             {
-                foreach (Invader invader in invaders)
+                if (invaderDirection == Direction.Right)
                 {
-
-                    if (new Rectangle(100, 0, 1, boundaries.Height).Contains(invader.Area) || new Rectangle(boundaries.Right - 100, 0, 1, boundaries.Height).Contains(invader.Area))
+                    var invaderNextToRightBoundary = from invader in invaders
+                                                     where invader.Area.X >= boundaries.Right - 100
+                                                     select invader;
+                    if (invaderNextToRightBoundary.Any())
                     {
-                        invader.Move(Direction.Down);
-                        if (invaderDirection == Direction.Right)
-                            invaderDirection = Direction.Left;
-                        else
-                            invaderDirection = Direction.Right;
+                        foreach (Invader invader in invaders)
+                            invader.Move(Direction.Down);
+                        invaderDirection = Direction.Left;
                     }
-                    invader.Move(invaderDirection);
+                    else
+                        foreach (Invader invader in invaders)
+                            invader.Move(invaderDirection);
                 }
-                framesSkipped = 0;
+                else
+                {
+                    var invaderNextToLeftBoundary = from invader in invaders
+                                                    where invader.Area.X <= 100
+                                                    select invader;
+                    if (invaderNextToLeftBoundary.Any())
+                    {
+                        foreach (Invader invader in invaders)
+                            invader.Move(Direction.Down);
+                        invaderDirection = Direction.Right;
+                    }
+                    else
+                        foreach (Invader invader in invaders)
+                            invader.Move(invaderDirection);
+                }
             }
             else
             {
                 framesSkipped++;
                 return;
+            }
+        }
+
+        private void ReturnFire()
+        {
+            if (invaderShots.Count >= wave + 1 || random.Next(10) < 10 - wave)
+                return;
+            else
+            {
+                var groupedInvaders = from invader in invaders
+                                      group invader by invader.Area.X
+                                      into invaderXcoordinate
+                                      orderby invaderXcoordinate.Key descending
+                                      select invaderXcoordinate;
+                var randGroup = groupedInvaders.ElementAt(random.Next(groupedInvaders.Count()));
+                Invader shootingInvader = randGroup.First();
+                invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y)));
+                var invaderAtTheBottom = from invaderGroup in groupedInvaders
+                                         where invaderGroup.First().Area.Bottom == boundaries.Bottom
+                                         select invaderGroup;
+                if (invaderAtTheBottom.Any())
+                    OnGameOver();
+            }
+        }
+
+        private void CheckForInvaderCollisions()
+        {
+            for (int i = 0; i < playerShots.Count; i++)
+            {
+                var deadInvaders = from invader in invaders
+                                   where invader.Area.Contains(playerShots[i].Location)
+                                   select invader;
+                for (int c = 0; c < deadInvaders.Count(); c++)
+                {
+                    if (playerShots[i].Location.Equals(deadInvaders.ElementAt(c).Area))
+                        playerShots.Remove(playerShots[i]);
+                    invaders.Remove(deadInvaders.ElementAt(c));
+                }
+            }
+        }
+
+        private void CheckForPlayerCollisions()
+        {
+            for (int i = 0; i < invaderShots.Count; i++)
+            {
+                if (playerShip.Area.Contains(invaderShots[i].Location))
+                {
+                    playerShip.Alive = false;
+                }
+                else
+                    return;
             }
         }
 
