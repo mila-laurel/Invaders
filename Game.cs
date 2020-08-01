@@ -88,9 +88,6 @@ namespace Invaders
                             invader.Move(Direction.Down);
                         invaderDirection = Direction.Left;
                     }
-                    else
-                        foreach (Invader invader in invaders)
-                            invader.Move(invaderDirection);
                 }
                 else
                 {
@@ -103,10 +100,9 @@ namespace Invaders
                             invader.Move(Direction.Down);
                         invaderDirection = Direction.Right;
                     }
-                    else
-                        foreach (Invader invader in invaders)
-                            invader.Move(invaderDirection);
                 }
+                foreach (Invader invader in invaders)
+                    invader.Move(invaderDirection);
             }
             else
             {
@@ -149,6 +145,7 @@ namespace Invaders
                     if (playerShots[i].Location.Equals(deadInvaders.ElementAt(c).Area))
                         playerShots.Remove(playerShots[i]);
                     invaders.Remove(deadInvaders.ElementAt(c));
+                    score++;
                 }
             }
         }
