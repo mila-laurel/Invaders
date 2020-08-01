@@ -59,10 +59,7 @@ namespace Invaders
                 CheckForInvaderCollisions();
             }
             else
-            {
-                playerShip.Die();
                 return;
-            }
         }
 
         private void NextWave()
@@ -157,6 +154,14 @@ namespace Invaders
                 if (playerShip.Area.Contains(invaderShots[i].Location))
                 {
                     playerShip.Alive = false;
+                    if (livesLeft > 0)
+                    {
+                        livesLeft--;
+                        playerShip.Alive = true;
+                        playerShip = new PlayerShip();
+                    }
+                    else
+                        OnGameOver();
                 }
                 else
                     return;
