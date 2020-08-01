@@ -30,7 +30,7 @@ namespace Invaders
             playerShip = new PlayerShip(boundaries);
             playerShots = new List<Shot>();
             invaderShots = new List<Shot>();
-            stars = new Stars();
+            stars = new Stars(boundaries, random);
         }
         public void FireShot()
         {
