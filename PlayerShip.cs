@@ -24,15 +24,15 @@ namespace Invaders
                 alive = value;
             }
         }
+        public Point Location { get; private set; }
+        public Rectangle Area { get { return new Rectangle(Location, image.Size); } }
         public PlayerShip(Rectangle playArea)
         {
             image = Properties.Resources.player;
             Alive = true;
             this.playArea = playArea;
+            Location = new Point(playArea.Width / 2 - Area.Size.Width / 2, playArea.Bottom - (Area.Size.Height + 5));
         }
-
-        public Point Location { get; private set; }
-        public Rectangle Area { get { return new Rectangle(Location, image.Size); } }
         internal void Draw(Graphics g)
         {
             if (Alive)

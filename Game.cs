@@ -63,7 +63,28 @@ namespace Invaders
 
         private void NextWave()
         {
-            invaders = new List<Invader>();
+            Bitmap image = new Bitmap(Properties.Resources.bug1);
+            invaders = new List<Invader>(30);
+            for (int i = 0; i < 6; i++)
+            {
+                invaders.Add(new Invader(ShipType.Satellite, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height), 50));
+            }
+            for (int i = 6; i < 12; i++)
+            {
+                invaders.Add(new Invader(ShipType.Bug, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 3), 40));
+            }
+            for (int i = 12; i < 18; i++)
+            {
+                invaders.Add(new Invader(ShipType.Saucer, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 5), 30));
+            }
+            for (int i = 18; i < 24; i++)
+            {
+                invaders.Add(new Invader(ShipType.Spaceship, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), invaders[0].Area.Height * 7), 20));
+            }
+            for (int i = 24; i < 30; i++)
+            {
+                invaders.Add(new Invader(ShipType.Star, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 9), 10));
+            }
             wave++;
             invaderDirection = Direction.Right;
             framesSkipped = 0;
@@ -139,9 +160,11 @@ namespace Invaders
                 for (int c = 0; c < deadInvaders.Count(); c++)
                 {
                     if (playerShots[i].Location.Equals(deadInvaders.ElementAt(c).Area))
+                    {
                         playerShots.Remove(playerShots[i]);
-                    invaders.Remove(deadInvaders.ElementAt(c));
-                    score++;
+                        score += deadInvaders.ElementAt(c).Score;
+                        invaders.Remove(deadInvaders.ElementAt(c));
+                    }
                 }
             }
         }
@@ -185,21 +208,21 @@ namespace Invaders
         {
             g.FillRectangle(Brushes.Black, boundaries);
             stars.Draw(g);
+            using (Font font = new Font("Arail", 16))
+            {
+                g.DrawString(score.ToString(), font, Brushes.AliceBlue, new Point(8, 8));
+            }
+            for (int i = 0; i < livesLeft; i++)
+            {
+                g.DrawImage(Properties.Resources.player, new Point(boundaries.Width - (playerShip.Area.Width*livesLeft + 5), 3));
+            }
             foreach (Invader invader in invaders)
                 invader.Draw(g, animationCell);
             playerShip.Draw(g);
             foreach (Shot shot in playerShots)
                 shot.Draw(g);
             foreach (Shot shot in invaderShots)
-                shot.Draw(g);
-            if (livesLeft < 0)
-            {
-                using (Font font = new Font("Arial", 32, FontStyle.Bold))
-                {
-                    g.DrawString("GAME OVER", font, Brushes.Yellow, 210, 230);
-                    g.DrawString("Press S to start a new game or Q to quit", font, Brushes.White, 630, 420);
-                }
-            }
+                shot.Draw(g);            
         }
 
         public void Twinkle()

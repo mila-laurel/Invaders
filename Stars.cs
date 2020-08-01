@@ -55,7 +55,12 @@ namespace Invaders
         {
             for (int i = 0; i < 100; i++)
             {
-                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, });
+                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 5, stars[i].point.Y), new Point(stars[i].point.X, stars[i].point.Y + 3), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 5, stars[i].point.Y + 3)});
+            }
+            for (int i = 100; i < 300; i++)
+            {
+                
+                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 5, stars[i].point.Y), new Point(stars[i].point.X, stars[i].point.Y + 3), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 5, stars[i].point.Y + 3) });
             }
 
         }
@@ -63,6 +68,7 @@ namespace Invaders
         internal void Twinkle()
         {
             throw new NotImplementedException();
+         
         }
 
         

@@ -59,6 +59,7 @@ namespace Invaders
         int frame = 0;
         private void animationTimer_Tick(object sender, EventArgs e)
         {
+            game.Twinkle();
             frame++;
             if (frame >= 6)
                 frame = 0;
