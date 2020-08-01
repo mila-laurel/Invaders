@@ -9,11 +9,12 @@ namespace Invaders
 {
     class PlayerShip
     {
-        private const int HorizontalInterval = 10;
+        private const int HorizontalInterval = 1;
         private int deadShipHeight;
         private Bitmap image;
         private DateTime then;
         private bool alive;
+        private Rectangle playArea;
         public bool Alive
         {
             get { return alive; }
@@ -23,12 +24,11 @@ namespace Invaders
                 alive = value;
             }
         }
-        private void Go()
+        public PlayerShip(Rectangle playArea)
         {
-            if (DateTime.Now - then == TimeSpan.FromSeconds(3.0))
-                Alive = true;
-            else
-                return;
+            image = Properties.Resources.player;
+            Alive = true;
+            this.playArea = playArea;
         }
 
         public Point Location { get; private set; }
@@ -38,7 +38,7 @@ namespace Invaders
             if (Alive)
             {
                 deadShipHeight = Area.Size.Height;
-                g.DrawImage(Properties.Resources.player, new Rectangle(Location, new Size(Area.Size.Width, deadShipHeight)));
+                g.DrawImage(image, new Rectangle(Location, new Size(Area.Size.Width, deadShipHeight)));
             }
             else
             {
@@ -47,7 +47,7 @@ namespace Invaders
                     if (deadShipHeight > 0)
                     {
                         deadShipHeight--;
-                        g.DrawImage(Properties.Resources.player, Location);
+                        g.DrawImage(image, new Rectangle(Location, new Size(Area.Size.Width, deadShipHeight)));
                     }
                 }
                 else
@@ -60,9 +60,19 @@ namespace Invaders
         internal void Move(Direction direction)
         {
             if (direction == Direction.Right)
-                Location = new Point(Location.X + HorizontalInterval, Location.Y);
+            {
+                if (playArea.Width - Area.Right > 0)
+                    Location = new Point(Location.X + HorizontalInterval, Location.Y);
+                else
+                    return;
+            }
             else
-                Location = new Point(Location.X - HorizontalInterval, Location.Y);
+            {
+                if (Location.X > 0)
+                    Location = new Point(Location.X - HorizontalInterval, Location.Y);
+                else
+                    return;
+            }
         }
     }
 }

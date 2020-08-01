@@ -18,7 +18,6 @@ namespace Invaders
         private Direction invaderDirection;
         private List<Invader> invaders;
         private PlayerShip playerShip;
-        public Point PlayerShipLocation { get { return new Point(playerShip.Area.X + playerShip.Area.Width / 2, playerShip.Area.Y); } }
         private List<Shot> playerShots;
         private List<Shot> invaderShots;
         private Stars stars;
@@ -28,15 +27,15 @@ namespace Invaders
             boundaries = playArea;
             this.random = random;
             NextWave();
-            playerShip = new PlayerShip();
+            playerShip = new PlayerShip(boundaries);
             playerShots = new List<Shot>();
             invaderShots = new List<Shot>();
             stars = new Stars();
         }
-        public void FireShot(Point location)
+        public void FireShot()
         {
             if (playerShots.Count < 2)
-                playerShots.Add(new Shot(location));
+                playerShots.Add(new Shot(new Point(playerShip.Location.X + playerShip.Area.Width / 2, playerShip.Location.Y), Direction.Up, boundaries));
         }
 
         public void Go()
@@ -121,7 +120,7 @@ namespace Invaders
                                       select invaderXcoordinate;
                 var randGroup = groupedInvaders.ElementAt(random.Next(groupedInvaders.Count()));
                 Invader shootingInvader = randGroup.First();
-                invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y)));
+                invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y), Direction.Down, boundaries));
                 var invaderAtTheBottom = from invaderGroup in groupedInvaders
                                          where invaderGroup.First().Area.Bottom == boundaries.Bottom
                                          select invaderGroup;
@@ -158,7 +157,7 @@ namespace Invaders
                     {
                         livesLeft--;
                         playerShip.Alive = true;
-                        playerShip = new PlayerShip();
+                        playerShip = new PlayerShip(boundaries);
                     }
                     else
                         OnGameOver();

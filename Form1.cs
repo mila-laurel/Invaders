@@ -21,6 +21,8 @@ namespace Invaders
         {
             InitializeComponent();
             game = new Game(random, ClientRectangle);
+            animationTimer.Start();
+            gameplayTimer.Start();
             game.GameOver += Game_GameOver;
         }
 
@@ -41,7 +43,7 @@ namespace Invaders
                     return;
                 }
             if (e.KeyCode == Keys.Space)
-                game.FireShot(game.PlayerShipLocation);
+                game.FireShot();
             if (keysPressed.Contains(e.KeyCode))
                 keysPressed.Remove(e.KeyCode);
             keysPressed.Add(e.KeyCode);
