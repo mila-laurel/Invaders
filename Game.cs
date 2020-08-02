@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Invaders
 {
+    delegate void GameOverDelegate();
+
     class Game
     {
         private int score = 0;
@@ -33,12 +35,12 @@ namespace Invaders
             invaderShots = new List<Shot>();
         }
 
-        public event EventHandler GameOver;
+        public event GameOverDelegate GameOver;
+
         private void OnGameOver()
         {
-            EventHandler gameOver = GameOver;
-            if (gameOver != null)
-                gameOver(this, new EventArgs());
+            var gameOver = GameOver;
+            gameOver?.Invoke();
         }
 
         public void FireShot()
@@ -159,7 +161,7 @@ namespace Invaders
         private void CheckForInvaderCollisions()
         {
             var invaderAtTheBottom = from invader in invaders
-                                     where invader.Area.Bottom == boundaries.Bottom
+                                     where invader.Area.Bottom >= boundaries.Bottom
                                      select invader;
             if (invaderAtTheBottom.Any())
                 OnGameOver();
@@ -167,9 +169,9 @@ namespace Invaders
             {
                 for (int i = 0; i < playerShots.Count; i++)
                 {
-                    var deadInvaders = from invader in invaders
+                    var deadInvaders = (from invader in invaders
                                        where invader.Area.Contains(playerShots[i].Location)
-                                       select invader;
+                                       select invader).ToArray();
                     if (deadInvaders.Any())
                     {
                         for (int c = 0; c < deadInvaders.Count(); c++)

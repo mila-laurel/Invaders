@@ -13,24 +13,32 @@ namespace Invaders
     public partial class Form1 : Form
     {
         List<Keys> keysPressed = new List<Keys>();
-        bool gameOver;
+        bool gameOver = true;
         private Game game;
         Random random = new Random();
+        private string HeaderText = "Welcome";
 
         public Form1()
         {
             InitializeComponent();
-            game = new Game(random, ClientRectangle);
-            gameOver = false;
-            gameplayTimer.Start();
-            game.GameOver += Game_GameOver;
         }
 
-        private void Game_GameOver(object sender, EventArgs e)
+        private void Game_GameOver()
         {
             gameplayTimer.Stop();
+            HeaderText = "GAME OVER LOOSER";
             gameOver = true;
             Invalidate();
+        }
+        
+        private void RestartGame()
+        {
+            if(game != null)
+                game.GameOver -= Game_GameOver;
+            game = new Game(random, ClientRectangle);
+            game.GameOver += Game_GameOver;
+            gameOver = false;
+            gameplayTimer.Start();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -40,9 +48,7 @@ namespace Invaders
             if (gameOver)
                 if(e.KeyCode == Keys.S)
                 {
-                    gameOver = false;
-                    game = new Game(random, ClientRectangle);
-                    gameplayTimer.Start();
+                    RestartGame();
                     return;
                 }
             if (e.KeyCode == Keys.Space)
@@ -62,7 +68,7 @@ namespace Invaders
         int frame = 0;
         private void animationTimer_Tick(object sender, EventArgs e)
         {
-            game.Twinkle();
+            game?.Twinkle();
             frame++;
             if (frame >= 6)
                 frame = 0;
@@ -120,11 +126,14 @@ namespace Invaders
             {
                 using (Font font = new Font("Arial", 32, FontStyle.Bold))
                 {
-                    g.DrawString("GAME OVER", font, Brushes.Yellow, 210, 230);
-                    g.DrawString("Press S to start a new game or Q to quit", font, Brushes.White, 630, 420);
+                    g.FillRectangle(Brushes.Black, ClientRectangle);
+                    var clientRectangleMiddle = new Point(ClientRectangle.Width / 2, ClientRectangle.Height / 2);
+                    g.DrawString(HeaderText, font, Brushes.Yellow, 20, clientRectangleMiddle.Y - 50);
+                    g.DrawString("Press S to start a new game or Q to quit", font, Brushes.White, 20, clientRectangleMiddle.Y + 50);
                 }
             }
-            game.Draw(g, animationCell);         
+            else
+                game.Draw(g, animationCell);         
         }
     }
 }
