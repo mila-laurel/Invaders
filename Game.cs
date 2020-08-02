@@ -45,7 +45,7 @@ namespace Invaders
 
         public void FireShot()
         {
-            if (playerShots.Count < 2)
+            if (playerShots.Count < 5)
                 playerShots.Add(new Shot(new Point(playerShip.Location.X + playerShip.Area.Width / 2, playerShip.Location.Y), Direction.Up, boundaries));
             else
                 return;
@@ -110,7 +110,7 @@ namespace Invaders
                 if (invaderDirection == Direction.Right)
                 {
                     var invaderNextToRightBoundary = from invader in invaders
-                                                     where invader.Area.X >= boundaries.Right - 100
+                                                     where invader.Area.X >= boundaries.Right - 50
                                                      select invader;
                     if (invaderNextToRightBoundary.Any())
                     {
@@ -122,7 +122,7 @@ namespace Invaders
                 else
                 {
                     var invaderNextToLeftBoundary = from invader in invaders
-                                                    where invader.Area.X <= 100
+                                                    where invader.Area.X <= 50
                                                     select invader;
                     if (invaderNextToLeftBoundary.Any())
                     {
@@ -185,7 +185,9 @@ namespace Invaders
                         }
                     }
                 }
-            }            
+            }
+            if (invaders.Count == 0)
+                NextWave();
         }
 
         private void CheckForPlayerCollisions()

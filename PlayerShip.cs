@@ -9,7 +9,7 @@ namespace Invaders
 {
     class PlayerShip
     {
-        private const int HorizontalInterval = 15;
+        private const int HorizontalInterval = 20;
         private int deadShipHeight;
         private Bitmap image;
         private DateTime then;
@@ -61,14 +61,14 @@ namespace Invaders
         {
             if (direction == Direction.Right)
             {
-                if (playArea.Width - Area.Right > 0)
+                if (playArea.Width - (Area.Right+15) > 0)
                     Location = new Point(Location.X + HorizontalInterval, Location.Y);
                 else
                     return;
             }
             else
             {
-                if (Location.X > 0)
+                if (Location.X-15 > 0)
                     Location = new Point(Location.X - HorizontalInterval, Location.Y);
                 else
                     return;
