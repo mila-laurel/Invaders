@@ -13,7 +13,7 @@ namespace Invaders
     public partial class Form1 : Form
     {
         List<Keys> keysPressed = new List<Keys>();
-        bool gameOver = false;
+        bool gameOver;
         private Game game;
         Random random = new Random();
 
@@ -21,7 +21,7 @@ namespace Invaders
         {
             InitializeComponent();
             game = new Game(random, ClientRectangle);
-            animationTimer.Start();
+            gameOver = false;
             gameplayTimer.Start();
             game.GameOver += Game_GameOver;
         }
@@ -40,6 +40,9 @@ namespace Invaders
             if (gameOver)
                 if(e.KeyCode == Keys.S)
                 {
+                    gameOver = false;
+                    game = new Game(random, ClientRectangle);
+                    gameplayTimer.Start();
                     return;
                 }
             if (e.KeyCode == Keys.Space)
@@ -87,7 +90,7 @@ namespace Invaders
                     animationCell = 0;
                     break;
             }
-
+            Invalidate();
         }
 
         private void gameplayTimer_Tick(object sender, EventArgs e)
@@ -106,6 +109,8 @@ namespace Invaders
                     return;
                 }
             }
+            if (gameOver)
+                gameplayTimer.Stop();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)

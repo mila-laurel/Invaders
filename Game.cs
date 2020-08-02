@@ -26,31 +26,42 @@ namespace Invaders
         {
             boundaries = playArea;
             this.random = random;
+            stars = new Stars(boundaries, random);
             NextWave();
             playerShip = new PlayerShip(boundaries);
             playerShots = new List<Shot>();
             invaderShots = new List<Shot>();
-            stars = new Stars(boundaries, random);
         }
+
+        public event EventHandler GameOver;
+        private void OnGameOver()
+        {
+            EventHandler gameOver = GameOver;
+            if (gameOver != null)
+                gameOver(this, new EventArgs());
+        }
+
         public void FireShot()
         {
             if (playerShots.Count < 2)
                 playerShots.Add(new Shot(new Point(playerShip.Location.X + playerShip.Area.Width / 2, playerShip.Location.Y), Direction.Up, boundaries));
+            else
+                return;
         }
 
         public void Go()
         {
             if (playerShip.Alive)
             {
-                foreach (Shot shot in playerShots)
+                for (int i = 0; i < playerShots.Count; i++)
                 {
-                    if (!shot.Move(Direction.Up, boundaries))
-                        playerShots.Remove(shot);
+                    if (!playerShots[i].Move())
+                        playerShots.RemoveAt(i);
                 }
-                foreach (Shot shot in invaderShots)
+                for (int i = 0; i < invaderShots.Count; i++)
                 {
-                    if (!shot.Move(Direction.Down, boundaries))
-                        invaderShots.Remove(shot);
+                    if (!invaderShots[i].Move())
+                        invaderShots.RemoveAt(i);
                 }
                 MoveInvaders();
                 ReturnFire();
@@ -71,22 +82,22 @@ namespace Invaders
             }
             for (int i = 6; i < 12; i++)
             {
-                invaders.Add(new Invader(ShipType.Bug, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 3), 40));
+                invaders.Add(new Invader(ShipType.Bug, new Point(boundaries.Width - (image.Size.Width * 2 * (i - 5)), image.Size.Height * 2), 40));
             }
             for (int i = 12; i < 18; i++)
             {
-                invaders.Add(new Invader(ShipType.Saucer, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 5), 30));
+                invaders.Add(new Invader(ShipType.Saucer, new Point(boundaries.Width - (image.Size.Width * 2 * (i - 11)), image.Size.Height * 3), 30));
             }
             for (int i = 18; i < 24; i++)
             {
-                invaders.Add(new Invader(ShipType.Spaceship, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), invaders[0].Area.Height * 7), 20));
+                invaders.Add(new Invader(ShipType.Spaceship, new Point(boundaries.Width - (image.Size.Width * 2 * (i - 17)), image.Size.Height * 4), 20));
             }
             for (int i = 24; i < 30; i++)
             {
-                invaders.Add(new Invader(ShipType.Star, new Point(boundaries.Width - (image.Size.Width * 2 * (i + 1)), image.Size.Height * 9), 10));
+                invaders.Add(new Invader(ShipType.Star, new Point(boundaries.Width - (image.Size.Width * 2 * (i - 23)), image.Size.Height * 5), 10));
             }
             wave++;
-            invaderDirection = Direction.Right;
+            invaderDirection = Direction.Left;
             framesSkipped = 0;
         }
 
@@ -140,33 +151,39 @@ namespace Invaders
                                       orderby invaderXcoordinate.Key descending
                                       select invaderXcoordinate;
                 var randGroup = groupedInvaders.ElementAt(random.Next(groupedInvaders.Count()));
-                Invader shootingInvader = randGroup.First();
+                Invader shootingInvader = randGroup.Last();
                 invaderShots.Add(new Shot(new Point(shootingInvader.Area.X + shootingInvader.Area.Width / 2, shootingInvader.Area.Y), Direction.Down, boundaries));
-                var invaderAtTheBottom = from invaderGroup in groupedInvaders
-                                         where invaderGroup.First().Area.Bottom == boundaries.Bottom
-                                         select invaderGroup;
-                if (invaderAtTheBottom.Any())
-                    OnGameOver();
             }
         }
 
         private void CheckForInvaderCollisions()
         {
-            for (int i = 0; i < playerShots.Count; i++)
+            var invaderAtTheBottom = from invader in invaders
+                                     where invader.Area.Bottom == boundaries.Bottom
+                                     select invader;
+            if (invaderAtTheBottom.Any())
+                OnGameOver();
+            if (playerShots.Count > 0)
             {
-                var deadInvaders = from invader in invaders
-                                   where invader.Area.Contains(playerShots[i].Location)
-                                   select invader;
-                for (int c = 0; c < deadInvaders.Count(); c++)
+                for (int i = 0; i < playerShots.Count; i++)
                 {
-                    if (playerShots[i].Location.Equals(deadInvaders.ElementAt(c).Area))
+                    var deadInvaders = from invader in invaders
+                                       where invader.Area.Contains(playerShots[i].Location)
+                                       select invader;
+                    if (deadInvaders.Any())
                     {
-                        playerShots.Remove(playerShots[i]);
-                        score += deadInvaders.ElementAt(c).Score;
-                        invaders.Remove(deadInvaders.ElementAt(c));
+                        for (int c = 0; c < deadInvaders.Count(); c++)
+                        {
+                            if (deadInvaders.ElementAt(c).Area.Contains(playerShots[i].Location))
+                            {
+                                playerShots.Remove(playerShots[i]);
+                                score += deadInvaders.ElementAt(c).Score;
+                                invaders.Remove(deadInvaders.ElementAt(c));
+                            }
+                        }
                     }
                 }
-            }
+            }            
         }
 
         private void CheckForPlayerCollisions()
@@ -196,14 +213,6 @@ namespace Invaders
                 playerShip.Move(direction);
         }
 
-        public event EventHandler GameOver;
-        private void OnGameOver()
-        {
-            EventHandler gameOver = GameOver;
-            if (gameOver != null)
-                gameOver(this, new EventArgs());
-        }
-
         public void Draw(Graphics g, int animationCell)
         {
             g.FillRectangle(Brushes.Black, boundaries);
@@ -214,7 +223,7 @@ namespace Invaders
             }
             for (int i = 0; i < livesLeft; i++)
             {
-                g.DrawImage(Properties.Resources.player, new Point(boundaries.Width - (playerShip.Area.Width*livesLeft + 5), 3));
+                g.DrawImage(Properties.Resources.player, new Point(boundaries.Width - (playerShip.Area.Width*(i+1) + 5), 3));
             }
             foreach (Invader invader in invaders)
                 invader.Draw(g, animationCell);
@@ -227,7 +236,7 @@ namespace Invaders
 
         public void Twinkle()
         {
-            stars.Twinkle();
+            stars.Twinkle(random);
         }
     }
 }

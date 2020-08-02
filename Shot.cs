@@ -26,9 +26,9 @@ namespace Invaders
             g.FillRectangle(Brushes.Yellow, new Rectangle(Location, new Size(width, height)));
         }
 
-        public bool Move(Direction direction, Rectangle rectangle)
+        public bool Move()
         {
-            if (rectangle.Contains(Location))
+            if (boundaries.Contains(Location))
             {
                 if (direction == Direction.Down)
                     Location = new Point(Location.X, Location.Y + MoveInterval);

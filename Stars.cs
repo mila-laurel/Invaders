@@ -55,22 +55,30 @@ namespace Invaders
         {
             for (int i = 0; i < 100; i++)
             {
-                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 5, stars[i].point.Y), new Point(stars[i].point.X, stars[i].point.Y + 3), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 5, stars[i].point.Y + 3)});
+                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 4, stars[i].point.Y), new Point(stars[i].point.X, stars[i].point.Y + 2), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 4, stars[i].point.Y + 2)});
             }
-            for (int i = 100; i < 300; i++)
+            for (int i = 100; i < 200; i++)
             {
-                
-                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 5, stars[i].point.Y), new Point(stars[i].point.X, stars[i].point.Y + 3), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 5, stars[i].point.Y + 3) });
+                g.DrawPolygon(stars[i].pen, new Point[] { stars[i].point, new Point(stars[i].point.X + 1, stars[i].point.Y - 1), new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 3, stars[i].point.Y - 1), new Point(stars[i].point.X + 4, stars[i].point.Y), new Point(stars[i].point.X + 3, stars[i].point.Y + 1), new Point(stars[i].point.X + 2, stars[i].point.Y + 2), new Point(stars[i].point.X + 1, stars[i].point.Y + 1)});
             }
-
+            for (int i = 200; i < 300; i++)
+            {
+                g.DrawLine(stars[i].pen, stars[i].point, new Point(stars[i].point.X + 8, stars[i].point.Y));
+                g.DrawLine(stars[i].pen, new Point(stars[i].point.X + 4, stars[i].point.Y - 4), new Point(stars[i].point.X + 4, stars[i].point.Y + 4));
+                g.DrawLine(stars[i].pen, new Point(stars[i].point.X + 2, stars[i].point.Y - 2), new Point(stars[i].point.X + 6, stars[i].point.Y + 2));
+                g.DrawLine(stars[i].pen, new Point(stars[i].point.X + 2, stars[i].point.Y + 2), new Point(stars[i].point.X + 6, stars[i].point.Y - 2));
+            }
         }
 
-        internal void Twinkle()
+        internal void Twinkle(Random random)
         {
-            throw new NotImplementedException();
-         
-        }
-
-        
+            Star[] starsToRemove = new Star[5];
+            for (int i = 0; i < 5; i++)
+            {
+                starsToRemove[i] = stars[random.Next(stars.Count)];
+                stars.Remove(starsToRemove[i]);
+                stars.Add(new Star(starsToRemove[i].point, RandomPen(random)));
+            }                              
+        }        
     }
 }

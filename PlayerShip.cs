@@ -9,12 +9,12 @@ namespace Invaders
 {
     class PlayerShip
     {
-        private const int HorizontalInterval = 1;
+        private const int HorizontalInterval = 15;
         private int deadShipHeight;
         private Bitmap image;
         private DateTime then;
-        private bool alive;
         private Rectangle playArea;
+        private bool alive;
         public bool Alive
         {
             get { return alive; }
