@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Invaders
 {
@@ -23,6 +21,7 @@ namespace Invaders
         private List<Shot> playerShots;
         private List<Shot> invaderShots;
         private Stars stars;
+        public List<Explosion> explosions = new List<Explosion>();
 
         public Game(Random random, Rectangle playArea)
         {
@@ -69,6 +68,8 @@ namespace Invaders
                 ReturnFire();
                 CheckForPlayerCollisions();
                 CheckForInvaderCollisions();
+                if (invaders.Count == 0)
+                    NextWave();
             }
             else
                 return;
@@ -170,24 +171,20 @@ namespace Invaders
                 for (int i = 0; i < playerShots.Count; i++)
                 {
                     var deadInvaders = (from invader in invaders
-                                       where invader.Area.Contains(playerShots[i].Location)
-                                       select invader).ToArray();
-                    if (deadInvaders.Any())
+                                                   where invader.Area.Contains(playerShots[i].Location)
+                                                   select invader).ToArray();
+                    for (int c = 0; c < deadInvaders.Count(); c++)
                     {
-                        for (int c = 0; c < deadInvaders.Count(); c++)
+                        if (deadInvaders.ElementAt(c).Area.Contains(playerShots[i].Location))
                         {
-                            if (deadInvaders.ElementAt(c).Area.Contains(playerShots[i].Location))
-                            {
-                                playerShots.Remove(playerShots[i]);
-                                score += deadInvaders.ElementAt(c).Score;
-                                invaders.Remove(deadInvaders.ElementAt(c));
-                            }
+                            explosions.Add(new Explosion(deadInvaders.ElementAt(c).Location));
+                            playerShots.Remove(playerShots[i]);
+                            score += deadInvaders.ElementAt(c).Score;
+                            invaders.Remove(deadInvaders.ElementAt(c));
                         }
                     }
                 }
             }
-            if (invaders.Count == 0)
-                NextWave();
         }
 
         private void CheckForPlayerCollisions()
@@ -197,6 +194,7 @@ namespace Invaders
                 if (playerShip.Area.Contains(invaderShots[i].Location))
                 {
                     playerShip.Alive = false;
+
                     if (livesLeft > 0)
                     {
                         livesLeft--;
@@ -227,7 +225,7 @@ namespace Invaders
             }
             for (int i = 0; i < livesLeft; i++)
             {
-                g.DrawImage(Properties.Resources.player, new Point(boundaries.Width - (playerShip.Area.Width*(i+1) + 5), 3));
+                g.DrawImage(Properties.Resources.player, new Point(boundaries.Width - (playerShip.Area.Width * (i + 1) + 5), 3));
             }
             foreach (Invader invader in invaders)
                 invader.Draw(g, animationCell);
@@ -235,12 +233,20 @@ namespace Invaders
             foreach (Shot shot in playerShots)
                 shot.Draw(g);
             foreach (Shot shot in invaderShots)
-                shot.Draw(g);            
+                shot.Draw(g);
+            if (explosions.Any())
+            {
+                foreach (Explosion explosion in explosions)
+                {
+                    explosion.Draw(g, animationCell);
+                    explosions.Remove(explosion);
+                }
+            }
         }
 
-        public void Twinkle()
-        {
-            stars.Twinkle(random);
-        }
+    public void Twinkle()
+    {
+        stars.Twinkle(random);
     }
+}
 }
