@@ -1,21 +1,24 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Invaders
 {
     class Explosion
     {
-       
+
         public Point Location { get; set; }
         public int Frame { get; set; }
+        public DateTime Start { get; set; }
 
         public Explosion(Point location)
         {
-           Location = location;
+            Location = location;
+            Start = DateTime.Now;
         }
         public void Draw(Graphics g, int animationCell)
         {
             Frame = animationCell;
-            switch(Frame)
+            switch (Frame)
             {
                 case 0:
                     g.DrawImage(new Bitmap(Properties.Resources.explosion1), Location);
@@ -26,10 +29,10 @@ namespace Invaders
                 case 2:
                     g.DrawImage(new Bitmap(Properties.Resources.explosion3), Location);
                     break;
-               default:
+                default:
                     g.DrawImage(new Bitmap(Properties.Resources.explosion4), Location);
                     break;
-            }    
+            }
         }
     }
 }

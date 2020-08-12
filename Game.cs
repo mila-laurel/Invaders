@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Invaders
 {
@@ -9,6 +10,8 @@ namespace Invaders
 
     class Game
     {
+        private const int explosionLife = 4;
+        private TimeSpan animTimerInterval = TimeSpan.FromMilliseconds(33 * explosionLife);
         private int score = 0;
         private int livesLeft = 2;
         private int wave = 0;
@@ -68,6 +71,7 @@ namespace Invaders
                 ReturnFire();
                 CheckForPlayerCollisions();
                 CheckForInvaderCollisions();
+                RemoveExplosion();
                 if (invaders.Count == 0)
                     NextWave();
             }
@@ -171,8 +175,8 @@ namespace Invaders
                 for (int i = 0; i < playerShots.Count; i++)
                 {
                     var deadInvaders = (from invader in invaders
-                                                   where invader.Area.Contains(playerShots[i].Location)
-                                                   select invader).ToArray();
+                                        where invader.Area.Contains(playerShots[i].Location)
+                                        select invader).ToArray();
                     for (int c = 0; c < deadInvaders.Count(); c++)
                     {
                         if (deadInvaders.ElementAt(c).Area.Contains(playerShots[i].Location))
@@ -239,14 +243,28 @@ namespace Invaders
                 foreach (Explosion explosion in explosions)
                 {
                     explosion.Draw(g, animationCell);
-                    explosions.Remove(explosion);
                 }
             }
         }
 
-    public void Twinkle()
-    {
-        stars.Twinkle(random);
+        public void RemoveExplosion()
+        {
+            if (explosions.Any())
+            {
+                for (int i = 0; i < explosions.Count; i++)
+                {
+                    if (DateTime.Now - explosions[i].Start > TimeSpan.FromMilliseconds(4 * 33))
+                    {
+                        explosions.RemoveAt(i);
+                    }
+                }
+            }
+
+        }
+
+        public void Twinkle()
+        {
+            stars.Twinkle(random);
+        }
     }
-}
 }
