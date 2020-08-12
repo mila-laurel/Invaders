@@ -11,7 +11,7 @@ namespace Invaders
     class Game
     {
         private const int explosionLife = 4;
-        private TimeSpan animTimerInterval = TimeSpan.FromMilliseconds(33 * explosionLife);
+        private int animTimerInterval = 33;
         private int score = 0;
         private int livesLeft = 2;
         private int wave = 0;
@@ -253,7 +253,7 @@ namespace Invaders
             {
                 for (int i = 0; i < explosions.Count; i++)
                 {
-                    if (DateTime.Now - explosions[i].Start > TimeSpan.FromMilliseconds(4 * 33))
+                    if (DateTime.Now - explosions[i].Start > TimeSpan.FromMilliseconds(explosionLife * animTimerInterval))
                     {
                         explosions.RemoveAt(i);
                     }

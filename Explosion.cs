@@ -6,9 +6,8 @@ namespace Invaders
     class Explosion
     {
 
-        public Point Location { get; set; }
-        public int Frame { get; set; }
-        public DateTime Start { get; set; }
+        public Point Location { get; private set; }
+        public DateTime Start { get; private set; }
 
         public Explosion(Point location)
         {
@@ -17,8 +16,7 @@ namespace Invaders
         }
         public void Draw(Graphics g, int animationCell)
         {
-            Frame = animationCell;
-            switch (Frame)
+            switch (animationCell)
             {
                 case 0:
                     g.DrawImage(new Bitmap(Properties.Resources.explosion1), Location);
