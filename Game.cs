@@ -11,7 +11,7 @@ namespace Invaders
     class Game
     {
         private const int explosionLife = 4;
-        private int animTimerInterval = 33;
+        private int animTimerInterval = 100;
         private int score = 0;
         private int livesLeft = 2;
         private int wave = 0;
@@ -202,8 +202,7 @@ namespace Invaders
                     if (livesLeft > 0)
                     {
                         livesLeft--;
-                        playerShip.Alive = true;
-                        playerShip = new PlayerShip(boundaries);
+                        
                     }
                     else
                         OnGameOver();

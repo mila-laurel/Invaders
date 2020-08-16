@@ -46,7 +46,8 @@ namespace Invaders
                         g.DrawImage(image, new Rectangle(Location, new Size(Area.Size.Width, deadShipHeight)));
                     }
                 }
-                Alive = true;
+                else
+                    Alive = true;
             }
         }
 
@@ -54,14 +55,14 @@ namespace Invaders
         {
             if (direction == Direction.Right)
             {
-                if (playArea.Width - (Area.Right+15) > 0)
+                if (playArea.Width - (Area.Right + 15) > 0)
                     Location = new Point(Location.X + HorizontalInterval, Location.Y);
                 else
                     return;
             }
             else
             {
-                if (Location.X-15 > 0)
+                if (Location.X - 15 > 0)
                     Location = new Point(Location.X - HorizontalInterval, Location.Y);
                 else
                     return;
